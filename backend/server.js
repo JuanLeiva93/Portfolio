@@ -6,8 +6,12 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware obligatorios
-app.use(cors());
+// Middleware obligatorios - MODIFICADO CON CORS EXTENDIDO PARA VERCEL
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Configuración del puente directo con los servidores seguros de Google Gmail
@@ -47,10 +51,19 @@ ${message}
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.error('Error en el protocolo de envío:', error);
-      return res.status(500).json({ status: 'ERROR', message: 'Fallo en el enlace de transmisión.' });
+      // Retornamos un estado estructurado para que no rompa el JSON del frontend
+      return res.status(500).json({ 
+        status: 'ERROR', 
+        message: error.message || 'Fallo de conexión con el servidor de Gmail.' 
+      });
     }
     console.log('Transmisión completada con éxito:', info.response);
-    res.status(200).json({ status: 'SUCCESS', message: 'Transmisión enviada al núcleo con éxito.' });
+    
+    // Cambiado 'SUCCESS' por el mensaje que espera tu index.html para ponerse verde
+    res.status(200).json({ 
+      status: 'TRANSMISSION_SUCCESSFUL', 
+      message: 'Transmisión enviada al núcleo con éxito.' 
+    });
   });
 });
 
