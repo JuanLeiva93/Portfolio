@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JUAN_LEIVA_OS // TERMINAL_v1.0</title>
+  <!-- Fuente Monoespaciada Estilo Terminal Retro -->
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* VARIABLES DE COLOR (Verde Fósforo de Computadora Antigua) */
+    :root {
+      --bg-terminal: #0a0f0d;
+      --glow-color: #33ff33;
+      --text-color: #33ff33;
+      --text-muted: #1a881a;
+      --accent-color: #ffffff;
+      --font-retro: 'Fira Code', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-terminal);
+      color: var(--text-color);
+      font-family: var(--font-retro);
+      font-size: 14px;
+      line-height: 1.6;
+      height: 100vh;
+      overflow: hidden;
+      padding: 20px;
+      position: relative;
+    }
+
+    /* EFECTO DE LÍNEAS DE ESCANEO DE MONITOR CRT */
+    body::before {
+      content: " ";
+      display: block;
+      position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      z-index: 9999;
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+    }
+
+    /* ENCABEZADO DEL SISTEMA */
+    .sys-header {
+      border-bottom: 2px dashed var(--text-color);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+
+    /* MENÚ DE NAVEGACIÓN DINÁMICO */
+    .sys-nav {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+      border-bottom: 1px solid var(--text-muted);
+      padding-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .nav-link {
+      color: var(--text-color);
+      text-decoration: none;
+      padding: 4px 10px;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .nav-link:hover, .nav-link.active {
+      background-color: var(--text-color);
+      color: var(--bg-terminal);
+      font-weight: bold;
+      box-shadow: 0 0 10px var(--glow-color);
+    }
+
+    /* PANTALLAS / SECCIONES CONTENEDORAS */
+    .sys-screen {
+      display: none; 
+      height: calc(100vh - 160px);
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+    .sys-screen.active {
+      display: block; 
+    }
+
+    /* ESTILOS DE BLOQUES INTERNOS */
+    .profile-container {
+      display: flex;
+      gap: 30px;
+      align-items: flex-start;
+    }
+    .avatar-placeholder {
+      width: 150px;
+      height: 150px;
+      border: 2px solid var(--text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(51, 255, 51, 0.05);
+      flex-shrink: 0;
+    }
+    
+    .data-row {
+      margin-bottom: 25px;
+      border-left: 2px solid var(--text-muted);
+      padding-left: 15px;
+    }
+    .data-title {
+      font-weight: bold;
+      color: var(--accent-color);
+      text-transform: uppercase;
+      font-size: 16px;
+    }
+    .data-meta {
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    /* LISTA DE COMPETENCIAS TÉCNICAS */
+    .tech-bullet-list {
+      list-style: none;
+      padding-left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 800px;
+    }
+    .tech-bullet-list li {
+      font-size: 15px;
+      color: var(--text-color);
+      position: relative;
+      padding-left: 30px;
+      transition: all 0.2s ease;
+      cursor: default;
+    }
+    .tech-bullet-list li::before {
+      content: '■';
+      position: absolute;
+      left: 0;
+      top: 1px;
+      color: var(--text-color);
+      font-size: 12px;
+    }
+    .tech-bullet-list li:hover {
+      color: var(--accent-color);
+      transform: translateX(6px);
+    }
+
+    /* ANIMACIÓN DEL CURSOR DE LA CONSOLA (PARPADEO) */
+    .blinking-cursor {
+      font-weight: bold;
+      animation: blink 1s step-start infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    form button:hover {
+      background: rgba(51, 255, 51, 0.1);
+      box-shadow: 0 0 10px var(--glow-color);
+    }
+
+    h2 { margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px dashed var(--text-muted); padding-bottom: 5px;}
+    a { color: var(--accent-color); text-decoration: underline; }
+    a:hover { color: var(--text-color); background: rgba(51, 255, 51, 0.2); }
+
+    /* Barra de scroll de la consola */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-terminal); }
+    ::-webkit-scrollbar-thumb { background: var(--text-muted); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-color); }
+  </style>
+</head>
+<body>
+
+  <!-- ENCABEZADO TÉCNICO -->
+  <header class="sys-header">
+    <div>SYSTEM: J_LEIVA_OS v1.0 // CORE_LOADED</div>
+    <div>BASED IN HUELVA, SPAIN</div>
+  </header>
+
+  <!-- NAVEGADOR INTERACTIVO -->
+  <nav class="sys-nav">
+    <div class="nav-link active" onclick="switchScreen('inicio')">[F1] INICIO</div>
+    <div class="nav-link" onclick="switchScreen('experiencia')">[F2] EXPERIENCIA</div>
+    <div class="nav-link" onclick="switchScreen('formacion')">[F3] FORMACIÓN</div>
+    <div class="nav-link" onclick="switchScreen('proyectos')">[F4] PROYECTOS PROPIOS</div>
+    <div class="nav-link" onclick="switchScreen('habilidades')">[F5] CORE STACK</div>
+    <div class="nav-link" onclick="switchScreen('contacto')">[F6] CONTACTO</div>
+  </nav>
+
+  <!-- ================= PANTALLA: INICIO ================= -->
+  <section id="inicio" class="sys-screen active">
+    <div class="profile-container">
+      <div class="avatar-placeholder">
+        <img src="foto.jpg" alt="JUAN LEIVA" style="width:100%; height:100%; object-fit:cover; filter: grayscale(100%) contrast(1.5) brightness(0.8);">
+      </div>
+      <div>
+        <h1 style="font-size: 2.5rem; margin-bottom: 5px;">Juan José Leiva Sánchez</h1>
+        <p style="color: var(--accent-color); font-weight: bold; margin-bottom: 15px;">&gt; Full-Stack Developer</p>
+        <h2>Sobre Mí</h2>
+        <p style="max-width: 700px; margin-bottom: 15px;">Desarrollador Full Stack con una sólida base técnica construida a través de proyectos personales y formación continua.[cite: 2]</p>
+        <p style="max-width: 700px;">Responsable, organized y enfocando en el detalle, con rápida adaptación a los cambios y buen trabajo en equipo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PANTALLA: EXPERIENCIA ================= -->
+  <section id="experiencia" class="sys-screen">
+    <h2>Historial de Despliegue Laboral</h2>
+    
+    <div class="data-row">
+      <div class="data-title">Creador APIs (Freelance)</div>
+      <div class="data-meta">Remoto | Sept 2025-Actualmente</div>
+      <p style="margin-bottom: 10px; color: var(--accent-color);">Creación de diferentes APIs con diferentes lenguajes de programación.</p>
+      <ul style="list-style-type: '- '; padding-left: 20px; margin-bottom: 15px;">
+        <li><strong>EcoImpact:</strong> Api para cálculo real a modo de extensión del navegador del consumo de CO2 por GB consumidos. Mediante JavaScript, Python, CSS3 y HTML5 con Uvicorn.</li>
+        <li><strong>Repo-Health-Analyzer:</strong> API para medir la salud y buenas prácticas de repositorios de GitHub, con acciones recomendadas. Mediante Python 3.12, FastAPI y Docker.</li>
+        <li><strong>Lumen Protocol:</strong> Sustituto de captchat mediante pulso humano del mousse sin datos biométricos. Mediante Rust, Vanilla JS y WebAssembly.</li>
+      </ul>
+    </div>
+
+    <div class="data-row">
+      <div class="data-title">Becario Full-Stack</div>
+      <div class="data-meta">Islas SEM Remoto | Jun 2025 Sept 2025</div>
+      <p>Desarrollo páginas web como Frontend con Angular 19, React 18, HTML5, CSS3, JavaScript y Sass, Postman.</p>
+      <p>Creación y uso de base de datos con MongoDB. Entorno backend con Node.JS y Cypress.</p>
+      <p>Implementación de Github Actions y Git, control de versiones.</p>
+      <p>Trabajo en proyectos reales. Reuniones por Microsoft Teams</p>
+    </div>
+
+    <div class="data-row">
+      <div class="data-title">Técnico Informático III Congreso H2V</div>
+      <div class="data-meta">VSet Media | Huelva | Abr 2025</div>
+      <p>Técnico encargado de rótulos de los ponentes, Cronometraje de las ponencias con mensajes en pantalla y timing.</p>
+      <p>Control y monitorización de recursos usados en las ponencias.</p>
+    </div>
+
+    <div class="data-row">
+      <div class="data-title">Técnico informático Diputación de Huelva</div>
+      <div class="data-meta">VSet Media | Huelva | Feb 2025</div>
+      <p>Técnico encargado de programa de grabación y traducción simultánea para congreso de hidrógeno verde.</p>
+      <p>Encargado de configuración de IP, asignación de rangos IP y grupos de seguridad, logrando una conexión óptima.</p>
+    </div>
+  </section>
+
+  <!-- ================= PANTALLA: FORMACIÓN ================= -->
+  <section id="formacion" class="sys-screen">
+    <h2>Instrucción Académica & Certificaciones</h2>
+    
+    <div class="data-row">
+      <div class="data-title">Fortinet Certified Associate in Cybersecurity</div>
+      <div class="data-meta">Fortinet - NSE 3 (Certificado) 2026 (Mejorando)</div>
+      <p style="margin-top: 8px;">
+        <a href="certificado_fortinet_FCA.pdf" target="_blank" style="color: var(--text-color); text-decoration: none; font-weight: bold;">
+          [&gt; EXECUTE: OPEN_CERTIFICATE_PDF]
+        </a>
+      </p>
+      <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+        Validation ID: 8016597078JL // Authenticity verified by Fortinet Training Institute.
+      </p>
+    </div>
+
+    <div class="data-row">
+      <div class="data-title">Desarrollador Full-Stack</div>
+      <div class="data-meta">Deusto Formación 2023 - 2025</div>
+    </div>
+
+    <div class="data-row">
+      <div class="data-title">CFGS Agencia de Viajes y Gestión de Eventos</div>
+      <div class="data-meta">IES La Rábida 2016-2018</div>
+    </div>
+  </section>
+
+  <!-- ================= PANTALLA: PROYECTOS ================= -->
+  <section id="proyectos" class="sys-screen">
+    <h2>Proyectos Personales / Repositorios</h2>
+    <p style="margin-bottom: 25px; color: var(--text-muted);">&gt; Índices de código fuente disponibles en servidor remoto:</p>
+
+    <div class="data-row">
+      <div class="data-title">EcoImpact</div>
+      <p>Api para cálculo real de consumo de CO2 por GB consumidos.</p>
+      <p><a href="https://github.com/JuanLeiva93/eco-impact-api" target="_blank">LOG_ENLACE: ACCEDER A GITHUB →</a></p>
+    </div>
+
+    <div class="data-row">
+      <div class="data-title">Repo-Health-Analyzer</div>
+      <p>API para medir la salud y buenas prácticas de repositorios de GitHub.</p>
+      <p><a href="https://github.com/JuanLeiva93/repo-health-analyzer" target="_blank">LOG_ENLACE: ACCEDER A GITHUB →</a></p>
+    </div>
+
+    <div class="data-row">
+      <div class="data-title">Lumen Protocol</div>
+      <p>Sustituto de captcha mediante pulso humano del mouse sin datos biométricos.</p>
+      <p><a href="https://github.com/JuanLeiva93/lumen-protocol" target="_blank">LOG_ENLACE: ACCEDER A GITHUB →</a></p>
+    </div>
+  </section>
+
+  <!-- ================= PANTALLA: CORE STACK (HABILIDADES) ================= -->
+  <section id="habilidades" class="sys-screen">
+    <h2>Estructura de Competencias Técnicas</h2>
+    <p style="margin-bottom: 25px; color: var(--text-muted);">&gt; Módulos técnicos verificados de forma interna:</p>
+    
+    <ul class="tech-bullet-list">
+      <li>GIT Control de versiones</li>
+      <li>ECMAScript 2015</li>
+      <li>TypeScript</li>
+      <li>Testing Jest, DOM Element & Cypress</li>
+      <li>NodeJS with Express and Postman</li>
+      <li>API RestFul y Swagger</li>
+      <li>MYSQL, Workbench, MongoDB, Compass y Mongoose</li>
+      <li>DevOps, Docker & GitHub Actions</li>
+      <li>HTML, CSS with Sass, Tailwind & Bootstrap</li>
+      <li>React, JSX and React-Router</li>
+      <li>Angular (v19)</li>
+      <li>Redux, React Dev Tool with RxJs library</li>
+    </ul>
+  </section>
+
+  <!-- ================= PANTALLA: CONTACTO ================= -->
+  <section id="contacto" class="sys-screen">
+    <h2>Establecer Protocolo de Enlace</h2>
+    <p style="margin-bottom: 20px; color: var(--text-muted);">&gt; Complete los parámetros de transmisión para enviar un mensaje directo al núcleo del sistema:</p>
+    
+    <form id="terminal-form" style="max-width: 600px; margin-bottom: 35px; display: flex; flex-direction: column; gap: 15px;">
+      
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <label style="color: var(--accent-color); font-size: 12px;">[PARAM_01] NOMBRE_REMITENTE:</label>
+        <input type="text" id="form-name" required style="background: rgba(51, 255, 51, 0.02); border: 1px solid var(--text-muted); padding: 8px; color: var(--text-color); font-family: var(--font-retro); outline: none;">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <label style="color: var(--accent-color); font-size: 12px;">[PARAM_02] EMPRESA_ORGANIZACIÓN:</label>
+        <input type="text" id="form-company" style="background: rgba(51, 255, 51, 0.02); border: 1px solid var(--text-muted); padding: 8px; color: var(--text-color); font-family: var(--font-retro); outline: none;">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <label style="color: var(--accent-color); font-size: 12px;">[PARAM_03] CORREO_ELECTRONICO:</label>
+        <input type="email" id="form-email" required style="background: rgba(51, 255, 51, 0.02); border: 1px solid var(--text-muted); padding: 8px; color: var(--text-color); font-family: var(--font-retro); outline: none;">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <label style="color: var(--accent-color); font-size: 12px;">[PARAM_04] ASUNTO_TRANSMISION:</label>
+        <input type="text" id="form-subject" required style="background: rgba(51, 255, 51, 0.02); border: 1px solid var(--text-muted); padding: 8px; color: var(--text-color); font-family: var(--font-retro); outline: none;">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <label style="color: var(--accent-color); font-size: 12px;">[PARAM_05] CUERPO_DEL_MENSAJE:</label>
+        <textarea id="form-message" rows="5" required style="background: rgba(51, 255, 51, 0.02); border: 1px solid var(--text-muted); padding: 8px; color: var(--text-color); font-family: var(--font-retro); outline: none; resize: none;"></textarea>
+      </div>
+
+      <button type="submit" class="btn-execute" style="background: var(--text-color); border: 1px solid var(--text-color); padding: 12px; color: var(--bg-terminal); font-family: var(--font-retro); font-size: 14px; font-weight: bold; cursor: pointer; text-align: left; position: relative; transition: all 0.3s ease; box-shadow: 0 0 15px rgba(51, 255, 51, 0.3);">
+        &gt; EXECUTE_TRANSMISSION<span class="blinking-cursor">_</span>
+      </button>
+
+      <div id="terminal-log" style="font-size: 12px; color: var(--text-muted); margin-top: 10px; display: none; border-left: 2px dashed var(--text-color); padding-left: 10px;"></div>
+    </form>
+
+    <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid var(--text-muted); padding-bottom: 5px;">Puertos alternativos de comunicación</h3>
+    <div style="display: flex; flex-direction: column; gap: 12px; font-size: 14px;">
+      <div>[COM_PORT_02] LINKEDIN: <a href="https://www.linkedin.com/in/juan-leiva-s%C3%A1nchez-68b66b208/" target="_blank">Juan Leiva Sánchez</a></div>
+      <div>[COM_PORT_03] GITHUB: <a href="https://github.com/JuanLeiva93" target="_blank">github.com/JuanLeiva93</a></div>
+    </div>
+  </section>
+
+  <!-- LÓGICA DE NAVEGACIÓN Y ENVÍO ASÍNCRONO -->
+  <script>
+    // Conmutador dinámico de pestañas
+    function switchScreen(screenId) {
+      const screens = document.querySelectorAll('.sys-screen');
+      screens.forEach(screen => screen.classList.remove('active'));
+
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => link.classList.remove('active'));
+
+      document.getElementById(screenId).classList.add('active');
+
+      const event = window.event;
+      if(event && event.target) {
+        event.target.classList.add('active');
+      }
+    }
+
+    // Interceptar envío y conectar con la API Node.js
+    document.getElementById('terminal-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const logBox = document.getElementById('terminal-log');
+      logBox.style.display = 'block';
+      logBox.style.color = 'var(--text-muted)';
+      logBox.innerHTML = '&gt; CONNECTING TO CORE SERVER ACTIVE PORT 3000...<br>&gt; ENCRYPTING PACKETS...<br>&gt; UPLOADING DATA MULTIPLEX...';
+
+      const payload = {
+        name: document.getElementById('form-name').value,
+        company: document.getElementById('form-company').value,
+        email: document.getElementById('form-email').value,
+        subject: document.getElementById('form-subject').value,
+        message: document.getElementById('form-message').value
+      };
+
+      try {
+        const response = await fetch('http://localhost:3000/api/transmit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          logBox.style.color = 'var(--text-color)';
+          logBox.innerHTML = `&gt; STATUS: ${data.status}<br>&gt; RESPONSE: ${data.message}`;
+          document.getElementById('terminal-form').reset();
+        } else {
+          throw new Error(data.message);
+        }
+      } catch (error) {
+        logBox.style.color = '#ff3333'; // Color rojo clásico de error crítico de sistema
+        logBox.innerHTML = `&gt; CRITICAL_SYSTEM_FAILURE!!<br>&gt; PROTOCOL TRANSMISSION INTERRUPTED.<br>&gt; LOG_ERROR: ${error.message}`;
+      }
+    });
+  </script>
+
+</body>
+</html>
