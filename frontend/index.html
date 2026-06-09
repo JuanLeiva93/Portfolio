@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JUAN_LEIVA_OS // TERMINAL_v1.0</title>
-  <!-- Fuente Monoespaciada Estilo Terminal Retro -->
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     /* VARIABLES DE COLOR (Verde Fósforo de Computadora Antigua) */
@@ -177,13 +176,11 @@
 </head>
 <body>
 
-  <!-- ENCABEZADO TÉCNICO -->
   <header class="sys-header">
     <div>SYSTEM: J_LEIVA_OS v1.0 // CORE_LOADED</div>
     <div>BASED IN HUELVA, SPAIN</div>
   </header>
 
-  <!-- NAVEGADOR INTERACTIVO -->
   <nav class="sys-nav">
     <div class="nav-link active" onclick="switchScreen('inicio')">[F1] INICIO</div>
     <div class="nav-link" onclick="switchScreen('experiencia')">[F2] EXPERIENCIA</div>
@@ -193,7 +190,6 @@
     <div class="nav-link" onclick="switchScreen('contacto')">[F6] CONTACTO</div>
   </nav>
 
-  <!-- ================= PANTALLA: INICIO ================= -->
   <section id="inicio" class="sys-screen active">
     <div class="profile-container">
       <div class="avatar-placeholder">
@@ -203,13 +199,12 @@
         <h1 style="font-size: 2.5rem; margin-bottom: 5px;">Juan José Leiva Sánchez</h1>
         <p style="color: var(--accent-color); font-weight: bold; margin-bottom: 15px;">&gt; Full-Stack Developer</p>
         <h2>Sobre Mí</h2>
-        <p style="max-width: 700px; margin-bottom: 15px;">Desarrollador Full Stack con una sólida base técnica construida a través de proyectos personales y formación continua.[cite: 2]</p>
-        <p style="max-width: 700px;">Responsable, organized y enfocando en el detalle, con rápida adaptación a los cambios y buen trabajo en equipo.</p>
+        <p style="max-width: 700px; margin-bottom: 15px;">Desarrollador Full Stack con una sólida base técnica construida a través de proyectos personales y formación continua.</p>
+        <p style="max-width: 700px;">Responsable, organizado y enfocado en el detalle, con rápida adaptación a los cambios y buen trabajo en equipo.</p>
       </div>
     </div>
   </section>
 
-  <!-- ================= PANTALLA: EXPERIENCIA ================= -->
   <section id="experiencia" class="sys-screen">
     <h2>Historial de Despliegue Laboral</h2>
     
@@ -220,7 +215,7 @@
       <ul style="list-style-type: '- '; padding-left: 20px; margin-bottom: 15px;">
         <li><strong>EcoImpact:</strong> Api para cálculo real a modo de extensión del navegador del consumo de CO2 por GB consumidos. Mediante JavaScript, Python, CSS3 y HTML5 con Uvicorn.</li>
         <li><strong>Repo-Health-Analyzer:</strong> API para medir la salud y buenas prácticas de repositorios de GitHub, con acciones recomendadas. Mediante Python 3.12, FastAPI y Docker.</li>
-        <li><strong>Lumen Protocol:</strong> Sustituto de captchat mediante pulso humano del mousse sin datos biométricos. Mediante Rust, Vanilla JS y WebAssembly.</li>
+        <li><strong>Lumen Protocol:</strong> Sustituto de captcha mediante pulso humano del mouse sin datos biométricos. Mediante Rust, Vanilla JS y WebAssembly.</li>
       </ul>
     </div>
 
@@ -248,7 +243,6 @@
     </div>
   </section>
 
-  <!-- ================= PANTALLA: FORMACIÓN ================= -->
   <section id="formacion" class="sys-screen">
     <h2>Instrucción Académica & Certificaciones</h2>
     
@@ -276,7 +270,6 @@
     </div>
   </section>
 
-  <!-- ================= PANTALLA: PROYECTOS ================= -->
   <section id="proyectos" class="sys-screen">
     <h2>Proyectos Personales / Repositorios</h2>
     <p style="margin-bottom: 25px; color: var(--text-muted);">&gt; Índices de código fuente disponibles en servidor remoto:</p>
@@ -300,7 +293,6 @@
     </div>
   </section>
 
-  <!-- ================= PANTALLA: CORE STACK (HABILIDADES) ================= -->
   <section id="habilidades" class="sys-screen">
     <h2>Estructura de Competencias Técnicas</h2>
     <p style="margin-bottom: 25px; color: var(--text-muted);">&gt; Módulos técnicos verificados de forma interna:</p>
@@ -321,7 +313,6 @@
     </ul>
   </section>
 
-  <!-- ================= PANTALLA: CONTACTO ================= -->
   <section id="contacto" class="sys-screen">
     <h2>Establecer Protocolo de Enlace</h2>
     <p style="margin-bottom: 20px; color: var(--text-muted);">&gt; Complete los parámetros de transmisión para enviar un mensaje directo al núcleo del sistema:</p>
@@ -367,7 +358,6 @@
     </div>
   </section>
 
-  <!-- LÓGICA DE NAVEGACIÓN Y ENVÍO ASÍNCRONO -->
   <script>
     // Conmutador dinámico de pestañas
     function switchScreen(screenId) {
@@ -392,7 +382,7 @@
       const logBox = document.getElementById('terminal-log');
       logBox.style.display = 'block';
       logBox.style.color = 'var(--text-muted)';
-      logBox.innerHTML = '&gt; CONNECTING TO CORE SERVER ACTIVE PORT 3000...<br>&gt; ENCRYPTING PACKETS...<br>&gt; UPLOADING DATA MULTIPLEX...';
+      logBox.innerHTML = '&gt; CONNECTING TO CORE SERVER...<br>&gt; ENCRYPTING PACKETS...<br>&gt; UPLOADING DATA MULTIPLEX...';
 
       const payload = {
         name: document.getElementById('form-name').value,
@@ -402,8 +392,14 @@
         message: document.getElementById('form-message').value
       };
 
+      // DETECCIÓN AUTOMÁTICA DE ENTORNO: 
+      // Si ejecutas en tu PC usará localhost, si estás en internet usará tu Render público de forma automática.
+      const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3000/api/transmit'
+        : 'https://portfolio-backend-m05t.onrender.com/api/transmit'; // <-- REEMPLAZA ESTA URL CON TU ENLACE REAL DE RENDER CUANDO LO TENGAS
+
       try {
-        const response = await fetch('http://localhost:3000/api/transmit', {
+        const response = await fetch(API_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
