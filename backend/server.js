@@ -14,12 +14,17 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Configuración del puente directo con los servidores seguros de Google Gmail
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com', // Forzamos el host directo de Google
+  port: 465,              // Puerto seguro SSL
+  secure: true,           // Usar SSL
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS // Tu contraseña de aplicación de 16 letras de Google
+    pass: process.env.EMAIL_PASS // Tu contraseña de aplicación de 16 letras
+  },
+  tls: {
+    // ESTA ES LA CLAVE: Forzar a Node.js a preferir IPv4 sobre IPv6
+    family: 4 
   }
 });
 
