@@ -30,6 +30,8 @@ const transporter = nodemailer.createTransport({
 
 // Ruta única de la API para procesar el formulario de la terminal
 app.post('/api/transmit', (req, res) => {
+    console.log('Petición recibida');
+    console.log(req.body);
   const { name, company, email, subject, message } = req.body;
 
   // Maquetación del correo que vas a recibir en tu bandeja de entrada
